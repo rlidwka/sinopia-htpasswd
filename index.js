@@ -110,6 +110,8 @@ HTPasswd.prototype._reload = function(callback) {
       if (self._last_time === st.mtime) return callback()
       self._last_time = st.mtime
 
+      //deal with empty files
+      if (st.size == 0) return callback()
       var buffer = new Buffer(st.size)
       fs.read(fd, buffer, 0, st.size, null, function(err, bytesRead, buffer) {
         if (err) return callback(err)
