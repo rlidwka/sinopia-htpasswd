@@ -50,6 +50,7 @@ function lock_and_read(name, callback) {
 
     fs.fstat(fd, function(err, st) {
       if (err) return callback(err, fd)
+      if (st.size == 0 ) return callback(null, fd)
 
       var buffer = new Buffer(st.size)
       fs.read(fd, buffer, 0, st.size, null, function(err, bytesRead, buffer) {
