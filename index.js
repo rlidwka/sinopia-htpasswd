@@ -99,10 +99,17 @@ HTPasswd.prototype.adduser = function(user, password, real_cb) {
   })
 }
 
-HTPasswd.prototype._reload = function(callback) {
+HTPasswd.prototype._reload = function(_callback) {
   var self = this
 
   fs.open(self._path, 'r', function(err, fd) {
+    function callback(err) {
+      if (!fd) return _callback(err)
+      fs.close(fd, function(err2) {
+        _callback(err || err2)
+      })
+    }
+
     if (err) return callback(err)
 
     fs.fstat(fd, function(err, st) {
@@ -111,15 +118,16 @@ HTPasswd.prototype._reload = function(callback) {
       self._last_time = st.mtime
 
       var buffer = new Buffer(st.size)
-      fs.read(fd, buffer, 0, st.size, null, function(err, bytesRead, buffer) {
+      if (st.size === 0) return onRead(null, 0, buffer)
+      fs.read(fd, buffer, 0, st.size, null, onRead)
+
+      function onRead(err, bytesRead, buffer) {
         if (err) return callback(err)
         if (bytesRead != st.size) return callback(new Error('st.size != bytesRead'))
         self._users = utils.parse_htpasswd(buffer.toString('utf8'))
 
-        fs.close(fd, function() {
-          callback()
-        })
-      })
+        callback()
+      }
     })
   })
 }
