@@ -107,6 +107,14 @@ describe('acc', function() {
       })
     })
 
+    it('should not add user with max_users=0', function(cb) {
+      var p = plugin({file: './zero-htpasswd', max_users: 0}, stuff)
+      p.adduser('foo1', 'bar1', function(err, ok) {
+        assert(err)
+        cb()
+      })
+    })
+
     it('should add user', function(cb) {
       var p = plugin({file: './zero-htpasswd'}, stuff)
       p.adduser('foo1', 'bar1', function(err, ok) {
