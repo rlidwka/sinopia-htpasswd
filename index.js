@@ -18,11 +18,15 @@ function HTPasswd(config, stuff) {
   self._sinopia_config = stuff.config
 
   // all this "sinopia_config" stuff is for b/w compatibility only
-  self._maxusers = self._config.max_users || self._sinopia_config.max_users
+  self._maxusers = self._config.max_users
+  if (self._maxusers == null) self._maxusers = self._sinopia_config.max_users
+  // set maxusers to Infinity if not specified
+  if (self._maxusers == null) self._maxusers = Infinity
 
   self._last_time = null
-  var file = self._config.file || self._sinopia_config.users_file
-  if (!file) throw new Error('should specify "file" in config')
+  var file = self._config.file
+  if (file == null) file = self._sinopia_config.users_file
+  if (file == null) throw new Error('should specify "file" in config')
   self._path = Path.resolve(Path.dirname(self._sinopia_config.self_path), file)
   return self
 }
