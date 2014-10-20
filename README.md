@@ -15,7 +15,7 @@ Add to your `config.yaml`:
 ```yaml
 auth:
   htpasswd:
-    users_file: ./htpasswd
+    file: ./htpasswd
 
     # Maximum amount of users allowed to register, defaults to "+inf".
     # You can set this to -1 to disable registration.
