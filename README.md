@@ -22,6 +22,18 @@ auth:
     #max_users: 1000
 ```
 
+## Password file format
+
+Passwords are stored in `htpasswd` file, and it is designed to be compatible with Nginx.
+
+We use standard password hashing in linux (same as in `/etc/shadow`, on most modern systems it's salted `SHA-512`), but you can use whatever your glibc supports.
+
+You can manually add new user with this command (see different commands [here](http://unix.stackexchange.com/questions/52108/how-to-create-sha512-password-hashes-on-command-line)):
+
+```sh
+$ echo "user:`mkpasswd --method=sha-512 password`" >> htpasswd
+```
+
 ## For plugin writers
 
 It's called as:
