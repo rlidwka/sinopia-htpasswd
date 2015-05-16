@@ -28,6 +28,8 @@ function HTPasswd(config, stuff) {
   if (file == null) file = self._sinopia_config.users_file
   if (file == null) throw new Error('should specify "file" in config')
   self._path = Path.resolve(Path.dirname(self._sinopia_config.self_path), file)
+  var group_file = self._config.group_file
+  if (group_file != null) self._group_path = Path.resolve(Path.dirname(self._sinopia_config.self_path), group_file)
   return self
 }
 
@@ -40,8 +42,25 @@ HTPasswd.prototype.authenticate = function(user, password, cb) {
 
     // authentication succeeded!
     // return all usergroups this user has access to;
-    // (this particular package has no concept of usergroups, so just return user herself)
-    return cb(null, [user])
+
+    var user_usersgroups = [user]
+    if (typeof self._group_path !== 'undefined') {
+      fs.readFile(self._group_path, { encoding: 'utf-8' }, function (err, data) {
+        if (err) return cb(err)
+
+        var data_lines = data.trim().split('\n')
+        for (k=0;k<data_lines.length;k++) {
+          var group_users = data_lines[k].split(/\ *:\ */)
+          if (group_users[1].trim().split(/\ +/).indexOf(user) !== -1) {
+            user_usersgroups.push(group_users[0].trim())
+          }
+        }
+
+        return cb(null, user_usersgroups)
+      })
+    } else {
+      return cb(null, user_usersgroups)
+    }
   })
 }
 
