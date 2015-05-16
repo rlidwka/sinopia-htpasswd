@@ -16,6 +16,7 @@ Add to your `config.yaml`:
 auth:
   htpasswd:
     file: ./htpasswd
+    group_file: ./htpgroup
 
     # Maximum amount of users allowed to register, defaults to "+inf".
     # You can set this to -1 to disable registration.
@@ -32,6 +33,23 @@ You can manually add new user with this command (see different commands [here](h
 
 ```sh
 $ echo "user:`mkpasswd --method=sha-512 password`" >> htpasswd
+```
+
+## Group file format
+
+The group file `htgroup` is optionnal. It's useful to make group of users.
+
+Example of `htgroup` file:
+```
+publisher: user1 user2 user3
+```
+
+And in your `config.yaml`:
+```yaml
+packages:
+  'local-*':
+    allow_access: $authenticated
+    allow_publish: publisher
 ```
 
 ## For plugin writers
