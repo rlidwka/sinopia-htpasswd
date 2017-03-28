@@ -60,6 +60,7 @@ function lock_and_read(name, _callback) {
 
     fs.fstat(fd, function(err, st) {
       if (err) return callback(err, fd)
+      if (st.size == 0 ) return callback(null, fd)
 
       var buffer = new Buffer(st.size)
       if (st.size === 0) return onRead(null, 0, buffer)
